@@ -1,0 +1,31 @@
+using PromotionPlanTests.Driver;
+using PromotionPlanTests.Helpers;
+
+namespace PromotionPlanTests.UIMap
+{
+    public class LoginPage
+    {
+        private WebElement _element;
+   
+        public LoginPage(WebElement element)
+        {
+            _element = element;
+        }
+
+        WebElement userNameField => Wait.TryToWaitFor(_element.IsClickable, () => _element.FindByXpath("//*[@id='txtLogin']"));
+        WebElement passwordField => _element.FindByXpath("//*[@id='Password']");
+        WebElement loginButton => _element.FindByXpath("//*[@id='Login']");
+
+        public LoginPage EnterUserNameAndPassword(string username, string password)
+        {
+            userNameField.SendKeys(username);
+            passwordField.SendKeys(password);
+            return this;
+        }
+        public HomePage ClickLogin()
+        {
+            loginButton.Click();
+            return new HomePage(_element);
+        }
+    }
+}
