@@ -1,0 +1,43 @@
+using PromotionPlanTests.Driver;
+using System;
+using System.Threading;
+
+namespace PromotionPlanTests.Helpers
+{
+    internal static class Wait
+    {
+        public static WebElement TryToWaitFor(Func<bool> condition, Func<WebElement> element)
+        {
+            var waitTimeout = 10;
+            var isSuccess = false;
+            var alreadyWaited = 0;
+            WebElement newElement = new WebElement();
+
+            while (true)
+            {
+                var result = false;
+                try
+                {
+                    newElement = element.Invoke();
+                    result = condition.Invoke();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+
+                if (result)
+                {
+                    isSuccess = true;
+                    break;
+                }
+                if (waitTimeout > alreadyWaited)
+                {
+                    alreadyWaited += 1;
+                }
+                Thread.Sleep(1000);
+            }
+            return newElement;
+        }
+    }
+}
