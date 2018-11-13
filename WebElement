@@ -1,0 +1,125 @@
+using OpenQA.Selenium;
+using OpenQA.Selenium.Interactions;
+using OpenQA.Selenium.Support.UI;
+using PromotionPlanTests.Configurations;
+using PromotionPlanTests.Helpers;
+using System;
+using System.Threading;
+
+namespace PromotionPlanTests.Driver
+{
+    public class WebElement
+    {
+        private IWebDriver _driver = Driver.InitializeDriver(ServerConfigs.BarcUrl.QA3);
+        private IWebElement _element;
+        public void SendKeys(string input)
+        {
+            _element.Clear();
+            _element.SendKeys(input);
+        }
+        public bool Click(string x)
+        {
+            try
+            {
+                _element.Click();
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+
+        }
+        public void Click()
+        {
+            _element.Click();
+        }
+        //public WebElement FindByXpath(string xpath)
+        //{
+        //    int timeout = 10;
+        //    bool result = false;
+        //    for (int i = 0; i < timeout; i += 1)
+        //    {
+        //        _element = _driver.FindElement(By.XPath(xpath));
+        //        result = (_element.Enabled && _element.Displayed && _element.Location.X != 0 && _element.Location.Y != 0 && _element.Size.Height != 0 && _element.Size.Width != 0);
+        //        if (result == false)
+        //        {
+        //            Thread.Sleep(1000);
+        //        }
+        //        else
+        //        {
+        //            return this;
+        //        }
+        //    }
+        //    return this;
+        //}
+        public WebElement FindByXpath(string xpath)
+        {
+            _element = _driver.FindElement(By.XPath(xpath));
+            return this;
+        }
+        public WebElement FindByXpath(string xpath, string variable)
+        {
+            _element = _driver.FindElement(By.XPath(xpath));
+            return this;
+        }
+
+        public void MoveToAndClick()
+        {
+            Actions actions = new Actions(_driver);
+            actions.MoveToElement(_element).Click().Perform();
+        }
+        public void DoubleClick()
+        {
+            Actions actions = new Actions(_driver);
+            actions.MoveToElement(_element).DoubleClick().Perform();
+        }
+        public string ShowText()
+        {
+            return _element.Text;
+        }
+        public void WaitTillPopupMaskDissapear()
+        {
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(30));
+            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.InvisibilityOfElementLocated(By.Id("modalPopupMask")));
+        }
+        public void WaitTillAlertDissapear()
+        {
+            var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(30));
+            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.InvisibilityOfElementLocated(By.Id("alertMsgOkBtn")));
+        }
+        public void CloseDriver()
+        {
+            _driver.Close();
+        }
+
+        public bool IsClickable()
+        {
+            return (_element.Displayed && _element.Enabled && _element.Location.X != 0 && _element.Location.Y != 0);
+        }
+        public bool IsEnable()
+        {
+            return _element.Enabled;
+        }
+        public bool IsInvisible()
+        {
+            try
+            {
+                return !_element.Displayed;
+            }
+            catch (NoSuchElementException)
+            {
+                return true;
+            }
+            catch (StaleElementReferenceException)
+            {
+                return true;
+            }
+        }
+        public void ScrollToByID(string element)
+        {
+            IJavaScriptExecutor js = (IJavaScriptExecutor)_driver;
+            js.ExecuteScript("document.getElementById(\"" + element + "\").scrollIntoView()", element);
+        }
+    }
+}
